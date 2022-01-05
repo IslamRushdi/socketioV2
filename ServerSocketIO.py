@@ -1,3 +1,20 @@
+from pyrebase import pyrebase
+
+config = {
+	"apiKey": "AIzaSyCA0PyRw1UdscIk6Od-kkuvZa4WwlhDIAU",
+    "authDomain": "room-da00b.firebaseapp.com",
+    "databaseURL": "https://room-da00b-default-rtdb.europe-west1.firebasedatabase.app",
+    "projectId": "room-da00b",
+    "storageBucket": "room-da00b.appspot.com",
+    "messagingSenderId": "732678436627",
+    "appId": "1:732678436627:web:0cbd8f297204c473eb0ce6",
+    "measurementId": "G-YV0SJVNHHN"
+}
+
+firebase = pyrebase.initialize_app(config)
+
+db = firebase.database()
+
 from socket import socket
 
 from flask import Flask, render_template, redirect, request, session
@@ -37,6 +54,7 @@ def test_connect():
 def test_disconnect():
     if request.sid in volunteers_id:
         volunteers_id.remove(request.sid)
+        db.child("volunteers").child("name").child(request.sid).remove()
         leave_room(room)
         
     print('Client disconnected')
@@ -45,6 +63,7 @@ def test_disconnect():
 @socketio.on('volunteer: connect to room')
 def handle_volunteer_connected():
     volunteers_id.append(request.sid)
+    db.child("volunteers").child("name").child(request.sid).push('ahmed')
     join_room(room)
     
     
