@@ -61,9 +61,9 @@ def test_disconnect():
 
 
 @socketio.on('volunteer: connect to room')
-def handle_volunteer_connected():
+def handle_volunteer_connected(data):
     volunteers_id.append(request.sid)
-    db.child("volunteers").child(request.sid).push({'name':'ahmed'})
+    db.child("volunteers").child(request.sid).push(data)
     join_room(room)
     
     
