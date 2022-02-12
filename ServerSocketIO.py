@@ -1,14 +1,15 @@
+from asyncio.windows_events import NULL
 from pyrebase import pyrebase
 
 config = {
-	"apiKey": "AIzaSyCA0PyRw1UdscIk6Od-kkuvZa4WwlhDIAU",
-    "authDomain": "room-da00b.firebaseapp.com",
-    "databaseURL": "https://room-da00b-default-rtdb.europe-west1.firebasedatabase.app",
-    "projectId": "room-da00b",
-    "storageBucket": "room-da00b.appspot.com",
-    "messagingSenderId": "732678436627",
-    "appId": "1:732678436627:web:0cbd8f297204c473eb0ce6",
-    "measurementId": "G-YV0SJVNHHN"
+    "apiKey": "AIzaSyAncU-eBzHUTvamHv_yEPaJEmZRfOrKLIs",
+    "authDomain": "roomv2-1a5a5.firebaseapp.com",
+    "databaseURL": "https://roomv2-1a5a5-default-rtdb.europe-west1.firebasedatabase.app",
+    "projectId": "roomv2-1a5a5",
+    "storageBucket": "roomv2-1a5a5.appspot.com",
+    "messagingSenderId": "758078593626",
+    "appId": "1:758078593626:web:3efb4dff6391f049109663",
+    "measurementId": "G-DXZVMB615E"
 }
 
 firebase = pyrebase.initialize_app(config)
@@ -61,9 +62,9 @@ def test_disconnect():
 
 
 @socketio.on('volunteer: connect to room')
-def handle_volunteer_connected(data):
+def handle_volunteer_connected():
     volunteers_id.append(request.sid)
-    db.child("volunteers").child(request.sid).push(data)
+    db.child("volunteers").child(request.sid).push(request.sid)
     join_room(room)
     
     
@@ -73,8 +74,9 @@ def handle_volunteer_connected(data):
 def handle_creating_offer(blind_sdp):
     #blind sdp: string
     print('blind sdp recieved in server')
-   
-    if len(volunteers_id) == 0:
+    volunteers= db.child("volunteers").get()
+    volunteersVal = volunteers.val()
+    if volunteersVal ==  None:
         return socketio.emit('server: no volunteer found')
     
     
@@ -83,7 +85,7 @@ def handle_creating_offer(blind_sdp):
         "sdp":blind_sdp,
         "id": request.sid,
     }
-
+    
     blind.append(blind_data)
     print(blind_data)
     socketio.emit('server: send blind connection to all volunteers to create offer',blind_data, room = room)
@@ -105,15 +107,10 @@ def handle_receiving_volunteer_candidate(volunteer_invitation):
        "sdp" : volunteer_invitation['sdp']
     }
     blindId = volunteer_invitation['blindId']
+    db.child("volunteers").child(request.sid).remove()
+    volunteers_id.remove(request.sid)
     socketio.emit('server: send volunteer candidate and sdp',volunteer_info, room= blindId )
     
-   
-   
-
-
-
-
-
 if __name__ == '__main__':
     socketio.run(app,host='0.0.0.0',debug=True, port=5000)
 
