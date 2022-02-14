@@ -104,13 +104,31 @@ def handle_receiving_volunteer_candidate(volunteer_invitation):
 
     volunteer_info = {
        "candidate" : volunteer_invitation['candidate'],
-       "sdp" : volunteer_invitation['sdp']
+       "sdp" : volunteer_invitation['sdp'],
+       "id" : request.sid ,
     }
     blindId = volunteer_invitation['blindId']
     db.child("volunteers").child(request.sid).remove()
     volunteers_id.remove(request.sid)
     socketio.emit('server: send volunteer candidate and sdp',volunteer_info, room= blindId )
-    
+
+
+@socketio.on("Volunteer: accepted call")
+def handle_volunteer_accepting_call():
+    socketio.emit("server: other volunteer accepted call")
+
+@socketio.on("blind: Call ended")
+def handle_blind_call_ending(volunteerID):
+    socketio.emit('server: blind Call ended', room = volunteerID)
+
+@socketio.on("volunteer: Call ended")
+def handle_volunteer_call_ending(blindID):
+    print('volunteer closed')
+    blindIdV2 = blindID
+    socketio.emit('server: Call ended', room = blindIdV2)
+
+
+
 if __name__ == '__main__':
     socketio.run(app,host='0.0.0.0',debug=True, port=5000)
 
