@@ -1,19 +1,16 @@
 from asyncio.windows_events import NULL
 from pyrebase import pyrebase
-
 config = {
-    "apiKey": "AIzaSyAncU-eBzHUTvamHv_yEPaJEmZRfOrKLIs",
-    "authDomain": "roomv2-1a5a5.firebaseapp.com",
-    "databaseURL": "https://roomv2-1a5a5-default-rtdb.europe-west1.firebasedatabase.app",
-    "projectId": "roomv2-1a5a5",
-    "storageBucket": "roomv2-1a5a5.appspot.com",
-    "messagingSenderId": "758078593626",
-    "appId": "1:758078593626:web:3efb4dff6391f049109663",
-    "measurementId": "G-DXZVMB615E"
+    "apiKey": "AIzaSyB30b8Y95IJ2WtYAiYVotGP90sCqsq9F-U",
+  "authDomain": "roomv3-c57ad.firebaseapp.com",
+  "databaseURL": "https://roomv3-c57ad-default-rtdb.europe-west1.firebasedatabase.app",
+  "projectId": "roomv3-c57ad",
+  "storageBucket": "roomv3-c57ad.appspot.com",
+  "messagingSenderId": "154542329505",
+  "appId": "1:154542329505:web:5ff868a4352b3184302ae0",
+  "measurementId": "G-HFCCSRYX21"
 }
-
 firebase = pyrebase.initialize_app(config)
-
 db = firebase.database()
 
 from socket import socket
@@ -74,9 +71,12 @@ def handle_volunteer_connected():
 def handle_creating_offer(blind_sdp):
     #blind sdp: string
     print('blind sdp recieved in server')
+    # if volunteers_id == None:
+    #     return socketio.emit('server: no volunteer found')
     volunteers= db.child("volunteers").get()
     volunteersVal = volunteers.val()
     if volunteersVal ==  None:
+        print("server: no volunteer found")
         return socketio.emit('server: no volunteer found')
     
     
